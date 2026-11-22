@@ -13,6 +13,15 @@ ts() { date '+%F %T'; }
 B=${MQTT_BASE_TOPIC:-mcc}; D=${DEVICE_ID:-mcc_skmc1200}
 
 adbstate=offline; adb_connect && adbstate=online
+# get-state can report "device" while every shell fails with "error: closed" (seen for two days on the
+# tested setup). Check a real shell; if it fails, restart the local adb server once, otherwise report offline
+# so the power-cycle blueprint can step in.
+shell_ok() { [ "$(timeout 15 $ADB -s "$ADB_ADDR" shell echo ok 2>/dev/null | tr -d '\r')" = ok ]; }
+if [ "$adbstate" = online ] && ! shell_ok; then
+  echo "$(ts) adb shell fails -> restarting adb server" >> "$LOG"
+  $ADB kill-server >/dev/null 2>&1; adb_connect; sleep 2
+  shell_ok || { adbstate=offline; echo "$(ts) adb shell still failing -> reporting offline" >> "$LOG"; }
+fi
 # expire_after 600: if this watchdog stops running, the sensor becomes unavailable instead of "off"
 DISC="$STATE_DIR/.adb-discovery-v1"
 [ -e "$DISC" ] || mqtt_pub "${DISCOVERY_PREFIX:-homeassistant}/binary_sensor/$D/adb/config" \
