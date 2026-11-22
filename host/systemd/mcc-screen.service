@@ -1,0 +1,16 @@
+# Copy to /etc/systemd/system/, replace YOUR_USER and /path/to/repo, then:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now mcc-screen
+[Unit]
+Description=Monsieur Cuisine Connect display as Home Assistant camera (MQTT)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+ExecStart=/usr/bin/python3 /path/to/repo/host/mcc-screen.py
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

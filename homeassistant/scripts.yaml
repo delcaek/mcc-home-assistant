@@ -1,0 +1,127 @@
+# Preset scripts: set all values, wait 1 s, check the lid, start.
+# Add to scripts.yaml (or Settings -> Automations & scenes -> Scripts -> YAML mode). Only useful with
+# "read_only": false in mcc.json (otherwise the control entities do not exist).
+
+mcc_chop:
+  alias: MCC Chop
+  description: "Monsieur Cuisine: Standard, speed 5, 0 °C, forward, 0 min 5 s - sets the values and starts."
+  icon: mdi:knife
+  mode: single
+  sequence:
+    - action: select.select_option
+      target: {entity_id: select.mcc_program}
+      data: {option: Standard}
+    - action: select.select_option
+      target: {entity_id: select.mcc_direction}
+      data: {option: Forward}
+    - action: number.set_value
+      target: {entity_id: number.mcc_speed}
+      data: {value: 5}
+    - action: number.set_value
+      target: {entity_id: number.mcc_target_temperature}
+      data: {value: 0}
+    - action: number.set_value
+      target: {entity_id: number.mcc_timer_minutes}
+      data: {value: 0}
+    - action: number.set_value
+      target: {entity_id: number.mcc_timer_seconds}
+      data: {value: 5}
+    - delay: {seconds: 1}   # retained settings must reach the machine before start
+    - condition: state
+      entity_id: binary_sensor.mcc_lid_open
+      state: "off"
+    - action: button.press
+      target: {entity_id: button.mcc_start}
+
+mcc_puree:
+  alias: MCC Purée
+  description: "Monsieur Cuisine: Standard, speed 8, 0 °C, forward, 0 min 30 s - sets the values and starts."
+  icon: mdi:blender
+  mode: single
+  sequence:
+    - action: select.select_option
+      target: {entity_id: select.mcc_program}
+      data: {option: Standard}
+    - action: select.select_option
+      target: {entity_id: select.mcc_direction}
+      data: {option: Forward}
+    - action: number.set_value
+      target: {entity_id: number.mcc_speed}
+      data: {value: 8}
+    - action: number.set_value
+      target: {entity_id: number.mcc_target_temperature}
+      data: {value: 0}
+    - action: number.set_value
+      target: {entity_id: number.mcc_timer_minutes}
+      data: {value: 0}
+    - action: number.set_value
+      target: {entity_id: number.mcc_timer_seconds}
+      data: {value: 30}
+    - delay: {seconds: 1}   # retained settings must reach the machine before start
+    - condition: state
+      entity_id: binary_sensor.mcc_lid_open
+      state: "off"
+    - action: button.press
+      target: {entity_id: button.mcc_start}
+
+mcc_saute:
+  alias: MCC Sauté
+  description: "Monsieur Cuisine: Standard, speed 1, 120 °C, reverse, 3 min 0 s - sets the values and starts."
+  icon: mdi:pot-steam
+  mode: single
+  sequence:
+    - action: select.select_option
+      target: {entity_id: select.mcc_program}
+      data: {option: Standard}
+    - action: select.select_option
+      target: {entity_id: select.mcc_direction}
+      data: {option: Reverse}
+    - action: number.set_value
+      target: {entity_id: number.mcc_speed}
+      data: {value: 1}
+    - action: number.set_value
+      target: {entity_id: number.mcc_target_temperature}
+      data: {value: 120}
+    - action: number.set_value
+      target: {entity_id: number.mcc_timer_minutes}
+      data: {value: 3}
+    - action: number.set_value
+      target: {entity_id: number.mcc_timer_seconds}
+      data: {value: 0}
+    - delay: {seconds: 1}   # retained settings must reach the machine before start
+    - condition: state
+      entity_id: binary_sensor.mcc_lid_open
+      state: "off"
+    - action: button.press
+      target: {entity_id: button.mcc_start}
+
+mcc_keep_warm:
+  alias: MCC Keep warm
+  description: "Monsieur Cuisine: Standard, speed 1, 60 °C, reverse, 30 min 0 s - sets the values and starts."
+  icon: mdi:thermometer-low
+  mode: single
+  sequence:
+    - action: select.select_option
+      target: {entity_id: select.mcc_program}
+      data: {option: Standard}
+    - action: select.select_option
+      target: {entity_id: select.mcc_direction}
+      data: {option: Reverse}
+    - action: number.set_value
+      target: {entity_id: number.mcc_speed}
+      data: {value: 1}
+    - action: number.set_value
+      target: {entity_id: number.mcc_target_temperature}
+      data: {value: 60}
+    - action: number.set_value
+      target: {entity_id: number.mcc_timer_minutes}
+      data: {value: 30}
+    - action: number.set_value
+      target: {entity_id: number.mcc_timer_seconds}
+      data: {value: 0}
+    - delay: {seconds: 1}   # retained settings must reach the machine before start
+    - condition: state
+      entity_id: binary_sensor.mcc_lid_open
+      state: "off"
+    - action: button.press
+      target: {entity_id: button.mcc_start}

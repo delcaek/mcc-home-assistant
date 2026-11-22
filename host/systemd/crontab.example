@@ -1,0 +1,2 @@
+# crontab -e  (as the user that owns the adb key authorised on the machine)
+*/2 * * * * /path/to/repo/host/mcc-watchdog.sh

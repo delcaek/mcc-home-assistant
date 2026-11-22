@@ -1,0 +1,14 @@
+{
+  "_comment": "Copy to config/mcc.json and edit. scripts/deploy.sh pushes it to /data/mcc/mcc.json on the machine.",
+  "read_only": true,
+  "mqtt_host": "192.0.2.10",
+  "mqtt_port": 1883,
+  "mqtt_user": "",
+  "mqtt_password": "",
+  "mqtt_base_topic": "mcc",
+  "discovery_prefix": "homeassistant",
+  "device_id": "mcc_skmc1200",
+  "device_name": "Monsieur Cuisine Connect",
+  "overlay_package": "io.mccha.overlay",
+  "watchdog_s": 5.0
+}

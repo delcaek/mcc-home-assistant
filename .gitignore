@@ -1,0 +1,12 @@
+# local configuration (contains addresses / credentials)
+config/config.env
+config/mcc.json
+# build output
+build/
+*.apk
+*.keystore
+*.jks
+__pycache__/
+*.pyc
+# recipe images you made yourself (keep them out of git unless you own them)
+recipes/img/

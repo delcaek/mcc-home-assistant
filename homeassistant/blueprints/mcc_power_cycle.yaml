@@ -1,0 +1,72 @@
+blueprint:
+  name: MCC - power-cycle when ADB is lost
+  description: >
+    Restarts the Monsieur Cuisine Connect through a smart plug (off 15 s, on again) when the host watchdog has
+    reported no ADB connection for 5 minutes and the machine is idle. Switching the mains off resets both the
+    Android board and the motor controller (an `adb reboot` does not reset the controller).
+    At most once per hour. Needs host/mcc-watchdog.sh (it publishes binary_sensor.mcc_adb_connection).
+  domain: automation
+  input:
+    adb_sensor:
+      name: ADB connection sensor
+      default: binary_sensor.mcc_adb_connection
+      selector: {entity: {domain: binary_sensor}}
+    running_sensor:
+      name: Running sensor
+      default: binary_sensor.mcc_running
+      selector: {entity: {domain: binary_sensor}}
+    plug:
+      name: Smart plug switch
+      selector: {entity: {domain: switch}}
+    power_sensor:
+      name: Power sensor of the plug (W)
+      selector: {entity: {domain: sensor, device_class: power}}
+    min_power:
+      name: Minimum power (W) - below this the machine is considered switched off
+      default: 1
+      selector: {number: {min: 0, max: 20, step: 0.5, unit_of_measurement: W}}
+    max_power:
+      name: Maximum idle power (W) - above this the machine is considered busy
+      default: 10
+      selector: {number: {min: 1, max: 100, step: 1, unit_of_measurement: W}}
+    notify_actions:
+      name: Notification (optional)
+      default: []
+      selector: {action: {}}
+mode: single
+triggers:
+  - trigger: state
+    entity_id: !input adb_sensor
+    to: "off"
+    for: {minutes: 5}
+  - trigger: time_pattern
+    minutes: /15
+conditions:
+  - condition: state
+    entity_id: !input adb_sensor
+    state: "off"
+    for: {minutes: 5}
+  - condition: numeric_state
+    entity_id: !input power_sensor
+    above: !input min_power
+    below: !input max_power
+  - condition: state
+    entity_id: !input plug
+    state: "on"
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: !input running_sensor
+        state: "on"
+  - condition: template
+    value_template: >
+      {{ this.attributes.last_triggered is none
+         or (now() - this.attributes.last_triggered).total_seconds() > 3600 }}
+actions:
+  - choose: []
+    default: !input notify_actions
+  - action: switch.turn_off
+    target: {entity_id: !input plug}
+  - delay: {seconds: 15}
+  - action: switch.turn_on
+    target: {entity_id: !input plug}
